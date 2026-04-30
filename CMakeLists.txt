@@ -14,4 +14,16 @@ add_executable(${PROJECT_NAME}
 )
 
 find_package(fltk CONFIG REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE fltk::fltk)
+find_package(yaml-cpp CONFIG REQUIRED)
+
+target_include_directories(${PROJECT_NAME}
+  PRIVATE
+  ${fltk_INCLUDE_DIRS}
+  ${yaml-cpp_INCLUDE_DIRS}
+)
+
+target_link_libraries(${PROJECT_NAME}
+  PRIVATE
+  ${fltk_LIBRARIES}
+  ${yaml-cpp_LIBRARIES}
+)
