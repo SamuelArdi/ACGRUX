@@ -1,10 +1,11 @@
 #include "FL/Fl_Double_Window.H"
 #include "FL/Fl_Flex.H"
 #include "FL/Fl_Check_Button.H"
-#include <FL/Enumerations.H>
-#include <FL/Fl_Button.H>
-#include <FL/Fl_Widget.H>
+#include "FL/Fl_Button.H"
+#include "FL/Fl_Widget.H"
 #include "FL/Fl_Hor_Value_Slider.H"
+#include "FL/Fl_Input.H"
+#include "FL/Fl_Box.H"
 
 #include "../lib/generator.h"
 
@@ -42,11 +43,11 @@ struct opts {
   Fl_Check_Button* specialOpt;
   Fl_Check_Button* ballastOpt;
 };
+opts opt;
 
 auto buildOptions() -> void {
   auto* options = new Fl_Flex(0, 0, 135, 100, Fl_Flex::VERTICAL);
 
-  opts opt;
   opt.tougesOpt = new Fl_Check_Button(0, 0, 0, 0, "Enable Touge");
   opt.tougeCarsOpt = new Fl_Check_Button(0, 0, 0, 0, "Enable Touge Cars");
 
@@ -71,6 +72,16 @@ auto buildBallast() -> void {
   ballastSlider->step(1);
   ballastSlider->bounds(1, 200);
   ballastSlider->value(1);
+  ballastSlider->deactivate(); // off by default
+
+  opt.ballastOpt->callback([](Fl_Widget* w, void* d) {
+    auto currentState = opt.ballastOpt->value();
+    if (currentState == 0) {
+      ballastSlider->deactivate();
+    } else {
+      ballastSlider->activate();
+    }
+  });
 
   ballast->end();
 
@@ -78,11 +89,13 @@ auto buildBallast() -> void {
 }
 
 // file operations
-auto buildFileOps() -> void {
-  auto* fileOps = new Fl_Flex(Options.w + 10, Ballast.h + 20, 205, 50, Fl_Flex::VERTICAL);
+auto buildProfile() -> void {
+  auto* fileOps = new Fl_Flex(0, Options.h + 15, Options.w, 130, Fl_Flex::VERTICAL);
 
+  auto* profileInput = new Fl_Input(0, 0, 0, 0, "YAML Profile");
   auto* openFile = new Fl_Button(0, 0, 0, 0, "Open YAML");
   auto* refreshFile = new Fl_Button(0, 0, 0, 0, "Refresh YAML");
+  auto* generateFile = new Fl_Button(0, 0, 0, 0, "Generate Default YAML");
 
   fileOps->gap(5);
   fileOps->end();
@@ -92,7 +105,7 @@ auto main(int argc, char** argv) -> int {
   buildWindow();
   buildOptions();
   buildBallast();
-  buildFileOps();
+  buildProfile();
 
   AppWindow->end();
   AppWindow->show(argc, argv);
