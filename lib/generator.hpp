@@ -11,15 +11,15 @@ using Vec = std::vector<std::string>;
 using Map = std::map<std::string, bool>;
 
 struct GenVecs {
-  Vec touges;
-  Vec downhillCars;
-  Vec uphillCars;
+  inline static Vec touges;
+  inline static Vec downhillCars;
+  inline static Vec uphillCars;
 
-  Vec circuits;
-  Vec circuitCars;
+  inline static Vec circuits;
+  inline static Vec circuitCars;
 
-  Vec special;
-  Vec ballast;
+  inline static Vec special;
+  inline static int ballast;
 };
 
 auto generateTouge() -> std::string;

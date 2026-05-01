@@ -1,3 +1,8 @@
+#include <FL/Enumerations.H>
+#include <cstddef>
+#include <iostream>
+#include <string>
+
 #include "FL/Fl_Double_Window.H"
 #include "FL/Fl_Flex.H"
 #include "FL/Fl_Check_Button.H"
@@ -7,8 +12,10 @@
 #include "FL/Fl_Output.H"
 #include "FL/Fl_Native_File_Chooser.H"
 #include "FL/Fl_Multiline_Output.H"
+#include "FL/Fl_Input.H"
 
-#include <iostream>
+#include "../lib/generator.hpp"
+#include "../lib/profile.hpp"
 
 struct WIDGET_SIZES {
   int x; int w;
@@ -86,6 +93,11 @@ auto buildBallast() -> void {
     }
   });
 
+  ballastSlider->when(FL_WHEN_CHANGED);
+  ballastSlider->callback([](Fl_Widget* w, void* d) {
+    GenVecs::ballast = static_cast<int>(ballastSlider->value());
+  });
+
   ballast->end();
 
   setWidgetSizes(ballast, Ballast);
@@ -95,30 +107,12 @@ auto buildBallast() -> void {
 auto buildProfile() -> void {
   auto* profile = new Fl_Flex(Options.x, Options.h + 15, Options.w, 25, Fl_Flex::HORIZONTAL);
 
-  auto* profileInput = new Fl_Output(0, 0, 0, 0);
-  profileInput->value("YAML Profile");
-  profile->fixed(profileInput, 90);
+  auto* setProfile = new Fl_Output(0, 0, 0, 0);
+  setProfile->value("YAML Profile");
+  profile->fixed(setProfile, 90);
 
   auto* profileSelect = new Fl_Button(0, 0, 0, 0, "Browse");
-
-  // Fl_Native_File_Chooser chooseFile;
-  // chooseFile.title("Select Profile");
-  // chooseFile.type(Fl_Native_File_Chooser::BROWSE_FILE);
-  // chooseFile.filter("YAML Files\t*.{yaml,yml}");
-  // chooseFile.directory(".");
-  // chooseFile.preset_file("default.yaml");
-
-  // switch (chooseFile.show()) {
-  //   case -1:
-  //   std::cerr << "ERROR, " << chooseFile.errmsg() << std::endl;
-  //   break;
-  //   case 1:
-  //   std::cerr << "CANCEL" << std::endl;
-  //   break;
-  //   default:
-  //   std::cout << "PICKED: " << chooseFile.filename() << std::endl;
-  //   break;
-  // }
+  profileSelect->callback(selectProfile, setProfile);
 
   profile->gap(2);
   profile->end();
@@ -128,8 +122,10 @@ auto buildProfile() -> void {
   auto* fileOps = new Fl_Flex(Options.x, (Profile.y + Profile.h) + 5, Options.w, 105, Fl_Flex::VERTICAL);
 
   auto* openFile = new Fl_Button(0, 0, 0, 0, "Open YAML");
-  auto* refreshFile = new Fl_Button(0, 0, 0, 0, "Load YAML");
-  // auto* generateFile = new Fl_Button(0, 0, 0, 0, "Generate Default YAML");
+  openFile->callback(openYaml, openFile);
+
+  auto* loadFile = new Fl_Button(0, 0, 0, 0, "Load YAML");
+  loadFile->callback(loadYaml, loadFile);
 
   fileOps->gap(5);
   fileOps->end();
