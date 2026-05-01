@@ -4,15 +4,16 @@
 #include "FL/Fl_Button.H"
 #include "FL/Fl_Widget.H"
 #include "FL/Fl_Hor_Value_Slider.H"
-#include "FL/Fl_Input.H"
-#include "FL/Fl_Box.H"
+#include "FL/Fl_Output.H"
+#include "FL/Fl_Native_File_Chooser.H"
+#include "FL/Fl_Multiline_Output.H"
 
-#include "../lib/generator.h"
+#include <iostream>
 
 struct WIDGET_SIZES {
   int x; int w;
   int y; int h;
-} Options, Ballast, FileOps;
+} Options, Ballast, Profile, Generate, FileOps;
 
 auto setWidgetSizes(Fl_Widget* widget, WIDGET_SIZES& widgetClass) {
   widgetClass.x = widget->x();
@@ -21,6 +22,8 @@ auto setWidgetSizes(Fl_Widget* widget, WIDGET_SIZES& widgetClass) {
   widgetClass.w = widget->w();
   widgetClass.h = widget->h();
 }
+
+// TODO: use constants for widget placements
 
 // window
 Fl_Double_Window* AppWindow;
@@ -46,7 +49,7 @@ struct opts {
 opts opt;
 
 auto buildOptions() -> void {
-  auto* options = new Fl_Flex(0, 0, 135, 100, Fl_Flex::VERTICAL);
+  auto* options = new Fl_Flex(5, 5, 135, 100, Fl_Flex::VERTICAL);
 
   opt.tougesOpt = new Fl_Check_Button(0, 0, 0, 0, "Enable Touge");
   opt.tougeCarsOpt = new Fl_Check_Button(0, 0, 0, 0, "Enable Touge Cars");
@@ -66,7 +69,7 @@ auto buildOptions() -> void {
 // ballast
 Fl_Hor_Value_Slider* ballastSlider;
 auto buildBallast() -> void {
-  auto* ballast = new Fl_Flex(Options.w + 10, 0, 205, 35, Fl_Flex::HORIZONTAL);
+  auto* ballast = new Fl_Flex(Options.w + 10, 5, 210, 35, Fl_Flex::HORIZONTAL);
 
   ballastSlider = new Fl_Hor_Value_Slider(0, 0, 0, 0, "Set Ballast");
   ballastSlider->step(1);
@@ -90,15 +93,64 @@ auto buildBallast() -> void {
 
 // file operations
 auto buildProfile() -> void {
-  auto* fileOps = new Fl_Flex(0, Options.h + 15, Options.w, 130, Fl_Flex::VERTICAL);
+  auto* profile = new Fl_Flex(Options.x, Options.h + 15, Options.w, 25, Fl_Flex::HORIZONTAL);
 
-  auto* profileInput = new Fl_Input(0, 0, 0, 0, "YAML Profile");
+  auto* profileInput = new Fl_Output(0, 0, 0, 0);
+  profileInput->value("YAML Profile");
+  profile->fixed(profileInput, 90);
+
+  auto* profileSelect = new Fl_Button(0, 0, 0, 0, "Browse");
+
+  // Fl_Native_File_Chooser chooseFile;
+  // chooseFile.title("Select Profile");
+  // chooseFile.type(Fl_Native_File_Chooser::BROWSE_FILE);
+  // chooseFile.filter("YAML Files\t*.{yaml,yml}");
+  // chooseFile.directory(".");
+  // chooseFile.preset_file("default.yaml");
+
+  // switch (chooseFile.show()) {
+  //   case -1:
+  //   std::cerr << "ERROR, " << chooseFile.errmsg() << std::endl;
+  //   break;
+  //   case 1:
+  //   std::cerr << "CANCEL" << std::endl;
+  //   break;
+  //   default:
+  //   std::cout << "PICKED: " << chooseFile.filename() << std::endl;
+  //   break;
+  // }
+
+  profile->gap(2);
+  profile->end();
+
+  setWidgetSizes(profile, Profile);
+
+  auto* fileOps = new Fl_Flex(Options.x, (Profile.y + Profile.h) + 5, Options.w, 105, Fl_Flex::VERTICAL);
+
   auto* openFile = new Fl_Button(0, 0, 0, 0, "Open YAML");
-  auto* refreshFile = new Fl_Button(0, 0, 0, 0, "Refresh YAML");
-  auto* generateFile = new Fl_Button(0, 0, 0, 0, "Generate Default YAML");
+  auto* refreshFile = new Fl_Button(0, 0, 0, 0, "Load YAML");
+  // auto* generateFile = new Fl_Button(0, 0, 0, 0, "Generate Default YAML");
 
   fileOps->gap(5);
   fileOps->end();
+
+  setWidgetSizes(fileOps, FileOps);
+}
+
+auto buildGenerate() -> void {
+  auto* generate = new Fl_Flex(Options.w + 10, Ballast.h + 22, Ballast.w, 52, Fl_Flex::VERTICAL);
+
+  auto* generateProfileBtn = new Fl_Button(0, 0, 0, 0, "Generate Default YAML");
+  auto* generateBtn = new Fl_Button(0, 0, 0, 0, "Generate");
+
+  generate->gap(2);
+  generate->end();
+
+  setWidgetSizes(generate, Generate);
+}
+
+auto buildGenerateOutput() -> void {
+  auto* output = new Fl_Multiline_Output(Options.w + 10, (Generate.y + Generate.h) + 5, Ballast.w, (Profile.h + FileOps.h) + 7);
 }
 
 auto main(int argc, char** argv) -> int {
@@ -106,7 +158,8 @@ auto main(int argc, char** argv) -> int {
   buildOptions();
   buildBallast();
   buildProfile();
-
+  buildGenerate();
+  buildGenerateOutput();
   AppWindow->end();
   AppWindow->show(argc, argv);
   return Fl::run();

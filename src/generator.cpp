@@ -1,1 +1,1 @@
-#include "../lib/generator.h"
+#include "../lib/generator.hpp"

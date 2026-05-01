@@ -12,7 +12,7 @@ project(ACGRUX VERSION 1.0.0 LANGUAGES CXX)
 add_executable(${PROJECT_NAME}
   src/main.cpp
   src/generator.cpp
-  src/profile.h
+  src/profile.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/lib)

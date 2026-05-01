@@ -1,2 +1,2 @@
 # ACGRUX
-Assetto Corsa T&amp;C Generator: UX
+Assetto Corsa T&amp;C Generator: Revitalized UX

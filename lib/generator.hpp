@@ -4,8 +4,8 @@
 #include <string>
 #include <map>
 
-#ifndef GENERATOR_H
-#define GENERATOR_H
+#ifndef GENERATOR_HPP
+#define GENERATOR_HPP
 
 using Vec = std::vector<std::string>;
 using Map = std::map<std::string, bool>;
