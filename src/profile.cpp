@@ -1,10 +1,12 @@
 #include "../lib/profile.hpp"
 #include "../lib/generator.hpp"
-#include <FL/fl_ask.H>
-#include <cstddef>
-#include <yaml-cpp/exceptions.h>
 
 std::string filePath;
+
+auto fileExists(const std::string path) -> bool {
+  std::ifstream f(path.c_str());
+  return f.good();
+};
 
 auto selectProfile(Fl_Widget* w, void* d) -> void {
   auto getFilename = [](std::string path) {
@@ -40,10 +42,6 @@ auto selectProfile(Fl_Widget* w, void* d) -> void {
 }
 
 auto openYaml(Fl_Widget* w, void* d) -> void {
-  auto fileExists = [](const std::string path) {
-    std::ifstream f(path.c_str());
-    return f.good();
-  };
 
   if (!fileExists(filePath)) {
     std::cerr << "FILE DOES NOT EXIST" << std::endl;
@@ -81,4 +79,48 @@ auto loadYaml(Fl_Widget* w, void* d) -> void {
   GenVecs::special = parsedProfile["special"];
 }
 
-auto generateYaml(Fl_Widget* w, void* d) -> void;
+auto generateYaml(Fl_Widget* w, void* d) -> void {
+  if (fileExists("default.yaml")) {
+    fl_beep(FL_BEEP_MESSAGE);
+    fl_message("A default.yaml file already exists.");
+    return;
+  }
+
+  std::ofstream file("default.yaml");
+  if (!file.is_open()) {
+    fl_beep(FL_BEEP_ERROR);
+    fl_alert("Failed to open default.yaml\nIf you see this message, please report it as this is a bug.");
+    return;
+  }
+
+  file << "# IMPORTANT PLEASE READ:\n";
+  file << "# this generator will not work unless this file has the correct syntax\n";
+  file << "# so please read closely to the syntax below:\n";
+  file << "#\n";
+  file << "# touge/circuits:\n";
+  file << "# - name{ID} NOTE: ID is for touge only. '+' is uphill, and '-' is downhill\n";
+  file << "#\n";
+  file << "# downhillCars/uphillCars/circuitCars:\n";
+  file << "# - name\n";
+  file << "#\n";
+  file << "# special\n";
+  file << "# - name\n";
+  file << "#\n";
+  file << "# NOTE: you do not need to add all of them nor is the order important\n";
+  file << "# as long as it follows the syntax then the program wont have any issues\n";
+  file.close();
+
+  std::cout << "GENERATED DEFAULT.YAML FILE" << std::endl;
+  fl_beep(FL_BEEP_MESSAGE);
+  fl_message("A default.yaml file has been generated in the directory of the executable.");
+
+  std::string cwd = std::filesystem::current_path();
+  std::string filename = std::filesystem::path("default.yaml");
+  std::string defaultPath = cwd + "/" + filename;
+  filePath = defaultPath;
+
+  {
+    auto* cpy = (Fl_Output*)d;
+    cpy->value("default.yaml");
+  }
+};

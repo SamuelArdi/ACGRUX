@@ -1,4 +1,3 @@
-#include <FL/Enumerations.H>
 #include <cstddef>
 #include <iostream>
 #include <string>
@@ -10,9 +9,8 @@
 #include "FL/Fl_Widget.H"
 #include "FL/Fl_Hor_Value_Slider.H"
 #include "FL/Fl_Output.H"
-#include "FL/Fl_Native_File_Chooser.H"
 #include "FL/Fl_Multiline_Output.H"
-#include "FL/Fl_Input.H"
+#include <FL/Enumerations.H>
 
 #include "../lib/generator.hpp"
 #include "../lib/profile.hpp"
@@ -104,10 +102,11 @@ auto buildBallast() -> void {
 }
 
 // file operations
+Fl_Output* setProfile;
 auto buildProfile() -> void {
   auto* profile = new Fl_Flex(Options.x, Options.h + 15, Options.w, 25, Fl_Flex::HORIZONTAL);
 
-  auto* setProfile = new Fl_Output(0, 0, 0, 0);
+  setProfile = new Fl_Output(0, 0, 0, 0);
   setProfile->value("YAML Profile");
   profile->fixed(setProfile, 90);
 
@@ -137,6 +136,8 @@ auto buildGenerate() -> void {
   auto* generate = new Fl_Flex(Options.w + 10, Ballast.h + 22, Ballast.w, 52, Fl_Flex::VERTICAL);
 
   auto* generateProfileBtn = new Fl_Button(0, 0, 0, 0, "Generate Default YAML");
+  generateProfileBtn->callback(generateYaml, setProfile);
+
   auto* generateBtn = new Fl_Button(0, 0, 0, 0, "Generate");
 
   generate->gap(2);
