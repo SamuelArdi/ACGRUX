@@ -119,8 +119,6 @@ auto generateYaml(Fl_Widget* w, void* d) -> void {
   std::string defaultPath = cwd + "/" + filename;
   filePath = defaultPath;
 
-  {
-    auto* cpy = (Fl_Output*)d;
-    cpy->value("default.yaml");
-  }
+  auto* cpy = (Fl_Output*)d;
+  cpy->value("default.yaml");
 };

@@ -9,5 +9,7 @@ cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
 cmake --build .
 
 cd ../bin
-rm default.yaml
-./ACGRUX
+
+if [[ $1 == "run" ]]; then
+  ./ACGRUX
+fi

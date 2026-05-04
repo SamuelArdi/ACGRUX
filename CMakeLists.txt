@@ -13,6 +13,7 @@ add_executable(${PROJECT_NAME}
   src/main.cpp
   src/generator.cpp
   src/profile.cpp
+  src/engine.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/lib)

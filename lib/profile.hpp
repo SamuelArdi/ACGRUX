@@ -1,3 +1,5 @@
+#pragma
+
 #include <iostream>
 #include <cstdlib>
 #include <fstream>

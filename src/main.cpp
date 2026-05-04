@@ -1,3 +1,4 @@
+#include <FL/Fl_Input_.H>
 #include <cstddef>
 #include <iostream>
 #include <string>
@@ -41,29 +42,26 @@ auto buildWindow() -> void {
 }
 
 // options
-struct opts {
-  Fl_Check_Button* tougesOpt;
-  Fl_Check_Button* tougeCarsOpt;
-
-  Fl_Check_Button* circuitsOpt;
-  Fl_Check_Button* circuitCarsOpt;
-
-  Fl_Check_Button* specialOpt;
-  Fl_Check_Button* ballastOpt;
-};
-opts opt;
-
 auto buildOptions() -> void {
   auto* options = new Fl_Flex(5, 5, 135, 100, Fl_Flex::VERTICAL);
 
-  opt.tougesOpt = new Fl_Check_Button(0, 0, 0, 0, "Enable Touge");
-  opt.tougeCarsOpt = new Fl_Check_Button(0, 0, 0, 0, "Enable Touge Cars");
+  Opts::tougesOpt = new Fl_Check_Button(0, 0, 0, 0, "Enable Touge");
+  Opts::tougeCarsOpt = new Fl_Check_Button(0, 0, 0, 0, "Enable Touge Cars");
 
-  opt.circuitsOpt = new Fl_Check_Button(0, 0, 0, 0, "Enable Circuit");
-  opt.circuitCarsOpt = new Fl_Check_Button(0, 0, 0, 0, "Enable Circuit Cars");
+  Opts::circuitsOpt = new Fl_Check_Button(0, 0, 0, 0, "Enable Circuit");
+  Opts::circuitCarsOpt = new Fl_Check_Button(0, 0, 0, 0, "Enable Circuit Cars");
 
-  opt.specialOpt = new Fl_Check_Button(0, 0, 0, 0, "Enable Special");
-  opt.ballastOpt = new Fl_Check_Button(0, 0, 0, 0, "Enable Ballast");
+  Opts::specialOpt = new Fl_Check_Button(0, 0, 0, 0, "Enable Special");
+  Opts::ballastOpt = new Fl_Check_Button(0, 0, 0, 0, "Enable Ballast");
+
+  // default them to true except ballast
+  Opts::tougesOpt->value(1);
+  Opts::tougeCarsOpt->value(1);
+
+  Opts::circuitsOpt->value(1);
+  Opts::circuitCarsOpt->value(1);
+
+  Opts::specialOpt->value(1);
 
   options->gap(5);
   options->end();
@@ -82,8 +80,8 @@ auto buildBallast() -> void {
   ballastSlider->value(1);
   ballastSlider->deactivate(); // off by default
 
-  opt.ballastOpt->callback([](Fl_Widget* w, void* d) {
-    auto currentState = opt.ballastOpt->value();
+  Opts::ballastOpt->callback([](Fl_Widget* w, void* d)-> void  {
+    auto currentState = Opts::ballastOpt->value();
     if (currentState == 0) {
       ballastSlider->deactivate();
     } else {
@@ -92,7 +90,7 @@ auto buildBallast() -> void {
   });
 
   ballastSlider->when(FL_WHEN_CHANGED);
-  ballastSlider->callback([](Fl_Widget* w, void* d) {
+  ballastSlider->callback([](Fl_Widget* w, void* d)-> void {
     GenVecs::ballast = static_cast<int>(ballastSlider->value());
   });
 
@@ -132,6 +130,11 @@ auto buildProfile() -> void {
   setWidgetSizes(fileOps, FileOps);
 }
 
+Fl_Multiline_Output* output;
+auto buildOutput() -> void {
+  output = new Fl_Multiline_Output(Options.w + 10, (Generate.y + Generate.h) + 5, Ballast.w, (Profile.h + FileOps.h) + 7);
+}
+
 auto buildGenerate() -> void {
   auto* generate = new Fl_Flex(Options.w + 10, Ballast.h + 22, Ballast.w, 52, Fl_Flex::VERTICAL);
 
@@ -139,15 +142,12 @@ auto buildGenerate() -> void {
   generateProfileBtn->callback(generateYaml, setProfile);
 
   auto* generateBtn = new Fl_Button(0, 0, 0, 0, "Generate");
+  generateBtn->callback(Generator, generateBtn);
 
   generate->gap(2);
   generate->end();
 
   setWidgetSizes(generate, Generate);
-}
-
-auto buildGenerateOutput() -> void {
-  auto* output = new Fl_Multiline_Output(Options.w + 10, (Generate.y + Generate.h) + 5, Ballast.w, (Profile.h + FileOps.h) + 7);
 }
 
 auto main(int argc, char** argv) -> int {
@@ -156,7 +156,7 @@ auto main(int argc, char** argv) -> int {
   buildBallast();
   buildProfile();
   buildGenerate();
-  buildGenerateOutput();
+  buildOutput();
   AppWindow->end();
   AppWindow->show(argc, argv);
   return Fl::run();
