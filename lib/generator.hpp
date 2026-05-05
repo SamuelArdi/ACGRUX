@@ -8,6 +8,7 @@
 #include "FL/Fl_Widget.H"
 #include "FL/Fl_Check_Button.H"
 #include "FL/Fl_Hor_Value_Slider.H"
+#include "FL/Fl_Multiline_Output.H"
 
 #ifndef GENERATOR_HPP
 #define GENERATOR_HPP
@@ -49,7 +50,6 @@ auto generateCircuit() -> std::string;
 auto generateCircuitCar() -> std::string;
 
 auto generateSpecial() -> std::string;
-auto generateBallast(Fl_Widget* w, void* d) -> int;
 
 auto Generator(Fl_Widget* w, void* d) -> void;
 

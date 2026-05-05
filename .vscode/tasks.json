@@ -4,9 +4,9 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Run Local Build Script",
+      "label": "Build Script Release",
       "type": "shell",
-      "command": "./build.sh"
-    }
-  ]
+      "command": "./build.sh rel run",
+    },
+  ],
 }

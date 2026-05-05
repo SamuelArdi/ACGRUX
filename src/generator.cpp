@@ -1,7 +1,5 @@
 #include "../lib/generator.hpp"
 #include "../lib/engine.hpp"
-#include <FL/fl_ask.H>
-#include <string>
 
 auto generateTouge() -> std::string {
   if (GenVecs::touges.empty()) {
@@ -40,16 +38,16 @@ auto generateTougeCar() -> std::string {
 
   switch (GenHelper::tougeID) {
     case '+':
-    return "\nCar: " + vectorRng(GenVecs::uphillCars);
+    return "Car: " + vectorRng(GenVecs::uphillCars);
 
     case '-':
-    return "\nCar: " + vectorRng(GenVecs::downhillCars);
+    return "Car: " + vectorRng(GenVecs::downhillCars);
 
     default:
     std::vector<std::string> combinedCars;
     combinedCars.insert(combinedCars.end(), GenVecs::downhillCars.begin(), GenVecs::downhillCars.end());
     combinedCars.insert(combinedCars.end(), GenVecs::uphillCars.begin(), GenVecs::uphillCars.end());
-    return "\nCar: " + vectorRng(combinedCars);
+    return "Car: " + vectorRng(combinedCars);
   }
 }
 
@@ -87,14 +85,15 @@ auto Generator(Fl_Widget *w, void* d) -> void {
     return static_cast<bool>(num);
   };
 
-  auto checkEmptyString = [](const std::string& str, std::string (*genFunc)())-> void{
+  auto* cpy = (Fl_Multiline_Output*)d;
+  auto checkEmptyString = [&](const std::string& str, std::string (*genFunc)())-> void{
     bool check = str.empty();
     if (check) {
       return;
     }
 
-    std::string selection = genFunc();
-    fl_message("%s", selection.c_str());
+    std::string selection = genFunc() + "\n";
+    cpy->append(selection.c_str());
   };
 
   // manually setting opts as bool
@@ -108,6 +107,7 @@ auto Generator(Fl_Widget *w, void* d) -> void {
 
   bool ballastOpt = setBool(Opts::ballastOpt->value());
 
+  cpy->value("");
   if (specialOpt && useSpecial()) {
     std::string special = generateSpecial();
     checkEmptyString(special, &generateSpecial);
@@ -117,24 +117,24 @@ auto Generator(Fl_Widget *w, void* d) -> void {
   bool isLegal = boolRng(); // whether its touge or circuit
   if (tougesOpt && !isLegal) {
     std::string touge = generateTouge();
-    checkEmptyString(touge, generateTouge);
+    checkEmptyString(touge, &generateTouge);
   }
   if (tougeCarsOpt && !isLegal) {
     std::string tougeCar = generateTougeCar();
-    checkEmptyString(tougeCar, generateTougeCar);
+    checkEmptyString(tougeCar, &generateTougeCar);
   }
 
   if (circuitOpt && isLegal) {
     std::string circuit = generateCircuit();
-    checkEmptyString(circuit, generateCircuit);
+    checkEmptyString(circuit, &generateCircuit);
   }
   if (circuitCarsOpt && isLegal) {
     std::string circuitCar = generateCircuitCar();
-    checkEmptyString(circuitCar, generateCircuitCar);
+    checkEmptyString(circuitCar, &generateCircuitCar);
   }
 
   if (ballastOpt) {
-    std::string ballast = std::to_string(ballastRng(Opts::ballastOpt->value()));
-    fl_message("%s", ballast.c_str());
+    std::string ballast = "\nBallast: " + std::to_string(ballastRng(GenVecs::ballast));
+    cpy->append(ballast.c_str());
   }
 };

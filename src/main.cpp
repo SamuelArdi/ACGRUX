@@ -1,4 +1,3 @@
-#include <FL/Fl_Input_.H>
 #include <cstddef>
 #include <iostream>
 #include <string>
@@ -11,7 +10,7 @@
 #include "FL/Fl_Hor_Value_Slider.H"
 #include "FL/Fl_Output.H"
 #include "FL/Fl_Multiline_Output.H"
-#include <FL/Enumerations.H>
+#include "FL/Enumerations.H"
 
 #include "../lib/generator.hpp"
 #include "../lib/profile.hpp"
@@ -19,7 +18,7 @@
 struct WIDGET_SIZES {
   int x; int w;
   int y; int h;
-} Options, Ballast, Profile, Generate, FileOps;
+} Options, Ballast, Profile, FileOps, Generate, Output;
 
 auto setWidgetSizes(Fl_Widget* widget, WIDGET_SIZES& widgetClass) {
   widgetClass.x = widget->x();
@@ -132,7 +131,11 @@ auto buildProfile() -> void {
 
 Fl_Multiline_Output* output;
 auto buildOutput() -> void {
-  output = new Fl_Multiline_Output(Options.w + 10, (Generate.y + Generate.h) + 5, Ballast.w, (Profile.h + FileOps.h) + 7);
+  output = new Fl_Multiline_Output(Options.w + 10, (Profile.y + Generate.h) + 5, Ballast.w, (Profile.h + FileOps.h) + 7);
+  output->set_output();
+  output->wrap(1);
+
+  setWidgetSizes(output, Output);
 }
 
 auto buildGenerate() -> void {
@@ -142,7 +145,7 @@ auto buildGenerate() -> void {
   generateProfileBtn->callback(generateYaml, setProfile);
 
   auto* generateBtn = new Fl_Button(0, 0, 0, 0, "Generate");
-  generateBtn->callback(Generator, generateBtn);
+  generateBtn->callback(Generator, output);
 
   generate->gap(2);
   generate->end();
@@ -155,8 +158,8 @@ auto main(int argc, char** argv) -> int {
   buildOptions();
   buildBallast();
   buildProfile();
-  buildGenerate();
   buildOutput();
+  buildGenerate();
   AppWindow->end();
   AppWindow->show(argc, argv);
   return Fl::run();

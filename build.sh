@@ -5,11 +5,17 @@ if [[ ! -d "build" ]] then
 fi
 
 cd build
-cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+
+if [[ $1 == 'rel' ]]; then
+  cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+elif [[ $1 == 'dbg' ]]; then
+  cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Debug
+fi
+
 cmake --build .
 
 cd ../bin
 
-if [[ $1 == "run" ]]; then
+if [[ $2 == "run" ]]; then
   ./ACGRUX
 fi
